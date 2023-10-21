@@ -52,8 +52,8 @@ include(FetchContent)
 message(STATUS "\nFetching mediasoupclient...\n")
 FetchContent_Declare(
   mediasoupclient
-  GIT_REPOSITORY https://github.com/versatica/libmediasoupclient.git
-  GIT_TAG v3
+  GIT_REPOSITORY git@github.com:rxdu/libmediasoupclient.git
+  GIT_TAG v3-devel
 )
 FetchContent_MakeAvailable(mediasoupclient)
 
@@ -61,7 +61,7 @@ message(STATUS "Fetching cpr...\n")
 FetchContent_Declare(
 	cpr
 	GIT_REPOSITORY https://github.com/whoshuu/cpr
-	GIT_TAG 1.4.0
+	GIT_TAG 1.5.2
 )
 FetchContent_MakeAvailable(cpr)
 
@@ -84,11 +84,16 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	"${PROJECT_SOURCE_DIR}/deps/libwebrtc"
 )
 
+find_package(PkgConfig)
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+
 # Public (interface) dependencies.
 target_link_libraries(${PROJECT_NAME} PUBLIC
 	${LIBWEBRTC_BINARY_PATH}/libwebrtc${CMAKE_STATIC_LIBRARY_SUFFIX}
 	cpr
 	mediasoupclient
 	webrtc_broadcaster
+    ${GLIB_LIBRARIES}
+    -lX11
 )
 

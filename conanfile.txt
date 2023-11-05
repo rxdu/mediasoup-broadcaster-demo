@@ -1,0 +1,5 @@
+[requires]
+mediasoupclient/0.7.0@westonrobot+library+mediasoupclient/devel
+
+[generators]
+cmake_paths

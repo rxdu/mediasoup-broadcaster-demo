@@ -22,14 +22,16 @@ endif(APPLE)
 # Create target.
 add_library(webrtc_broadcaster STATIC ${SOURCE_FILES})
 
+target_link_libraries(webrtc_broadcaster libwebrtc)
+
 # Private (implementation) header files.
-target_include_directories(webrtc_broadcaster PRIVATE ${PROJECT_SOURCE_DIR}/deps/libwebrtc)
+# target_include_directories(webrtc_broadcaster PRIVATE ${PROJECT_SOURCE_DIR}/deps/libwebrtc)
 
 # Public (interface) headers from dependencies.
-target_include_directories(webrtc_broadcaster PUBLIC
-	"${LIBWEBRTC_INCLUDE_PATH}"
-	"${LIBWEBRTC_INCLUDE_PATH}/third_party/abseil-cpp"
-)
+# target_include_directories(webrtc_broadcaster PUBLIC
+# 	"${LIBWEBRTC_INCLUDE_PATH}"
+# 	"${LIBWEBRTC_INCLUDE_PATH}/third_party/abseil-cpp"
+# )
 
 # Compile definitions for libwebrtc.
 target_compile_definitions(webrtc_broadcaster PUBLIC

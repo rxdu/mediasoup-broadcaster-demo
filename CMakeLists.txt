@@ -11,11 +11,16 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 message("\n=========== mediasoup-broadcaster-demo Build Configuration ===========\n")
-message(STATUS "LIBWEBRTC_INCLUDE_PATH : " ${LIBWEBRTC_INCLUDE_PATH})
-message(STATUS "LIBWEBRTC_BINARY_PATH  : " ${LIBWEBRTC_BINARY_PATH})
 message(STATUS "OPENSSL_INCLUDE_DIR    : " ${OPENSSL_INCLUDE_DIR})
 message(STATUS "CMAKE_USE_OPENSSL      : " ${CMAKE_USE_OPENSSL})
 message("")
+
+# use conan package to get libwebrtc
+set(CONAN_CMAKE_SETUP ${CMAKE_BINARY_DIR}/conan_paths.cmake)
+if (EXISTS ${CONAN_CMAKE_SETUP} AND NOT IS_DIRECTORY ${CONAN_CMAKE_SETUP})
+    include(${CONAN_CMAKE_SETUP})
+endif ()
+find_package(mediasoupclient REQUIRED)
 
 # Add some compile flags to our source files.
 set_source_files_properties(${SOURCE_FILES}
@@ -49,19 +54,11 @@ endif(APPLE)
 
 include(FetchContent)
 
-message(STATUS "\nFetching mediasoupclient...\n")
-FetchContent_Declare(
-  mediasoupclient
-  GIT_REPOSITORY git@github.com:rxdu/libmediasoupclient.git
-  GIT_TAG v3-devel
-)
-FetchContent_MakeAvailable(mediasoupclient)
-
 message(STATUS "Fetching cpr...\n")
 FetchContent_Declare(
 	cpr
 	GIT_REPOSITORY https://github.com/whoshuu/cpr
-	GIT_TAG 1.5.2
+	GIT_TAG 1.9.5
 )
 FetchContent_MakeAvailable(cpr)
 
@@ -79,21 +76,12 @@ add_subdirectory(deps/libwebrtc "${CMAKE_CURRENT_BINARY_DIR}/libwebrtc")
 
 # Public (interface) headers from dependencies.
 target_include_directories(${PROJECT_NAME} PUBLIC
-	${mediasoupclient_SOURCE_DIR}/include
 	${cpr_SOURCE_DIR}/include
-	"${PROJECT_SOURCE_DIR}/deps/libwebrtc"
 )
-
-find_package(PkgConfig)
-pkg_check_modules(GLIB REQUIRED glib-2.0)
 
 # Public (interface) dependencies.
 target_link_libraries(${PROJECT_NAME} PUBLIC
-	${LIBWEBRTC_BINARY_PATH}/libwebrtc${CMAKE_STATIC_LIBRARY_SUFFIX}
 	cpr
 	mediasoupclient
-	webrtc_broadcaster
-    ${GLIB_LIBRARIES}
-    -lX11
-)
+	webrtc_broadcaster)
 
